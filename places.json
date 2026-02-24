@@ -1,0 +1,22 @@
+[
+  { "id": 1, "name": "한라산 국립공원", "type": "outdoor", "region": "제주", "category": "자연관광지" },
+  { "id": 2, "name": "만장굴", "type": "indoor", "region": "제주", "category": "자연관광지" },
+  { "id": 3, "name": "제주 돌문화공원", "type": "outdoor", "region": "제주", "category": "박물관" },
+  { "id": 4, "name": "함덕 해수욕장", "type": "outdoor", "region": "제주", "category": "자연관광지" },
+  { "id": 5, "name": "동문 재래시장", "type": "indoor", "region": "제주", "category": "음식점" },
+  { "id": 6, "name": "성산 일출봉", "type": "outdoor", "region": "서귀포", "category": "자연관광지" },
+  { "id": 7, "name": "천지연 폭포", "type": "outdoor", "region": "서귀포", "category": "자연관광지" },
+  { "id": 8, "name": "제주 항공우주박물관", "type": "indoor", "region": "서귀포", "category": "박물관" },
+  { "id": 9, "name": "오설록 티 뮤지엄", "type": "indoor", "region": "서귀포", "category": "카페" },
+  { "id": 10, "name": "중문 색달 해수욕장", "type": "outdoor", "region": "서귀포", "category": "자연관광지" },
+  { "id": 11, "name": "제주 유리의성", "type": "indoor", "region": "제주", "category": "미술관" },
+  { "id": 12, "name": "아라리오 뮤지엄", "type": "indoor", "region": "제주", "category": "미술관" },
+  { "id": 13, "name": "본태 박물관", "type": "indoor", "region": "서귀포", "category": "미술관" },
+  { "id": 14, "name": "아쿠아플라넷 제주", "type": "indoor", "region": "서귀포", "category": "박물관" },
+  { "id": 15, "name": "테디베어 뮤지엄", "type": "indoor", "region": "서귀포", "category": "박물관" },
+  { "id": 16, "name": "빛의 벙커", "type": "indoor", "region": "서귀포", "category": "미술관" },
+  { "id": 17, "name": "앤트러사이트 한림", "type": "indoor", "region": "제주", "category": "카페" },
+  { "id": 18, "name": "바다다 카페", "type": "indoor", "region": "서귀포", "category": "카페" },
+  { "id": 19, "name": "우진해장국", "type": "indoor", "region": "제주", "category": "음식점" },
+  { "id": 20, "name": "오는정김밥", "type": "indoor", "region": "서귀포", "category": "음식점" }
+]
