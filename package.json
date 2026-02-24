@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "build": "mkdir -p dist && cp -R index.html main.js style.css places.json dist/",
+    "dev": "node dev-server.js",
     "deploy": "npm run build && npx wrangler pages deploy dist --project-name=imaginedigit"
   },
   "devDependencies": {
+    "dotenv": "^16.4.5",
     "wrangler": "^4.68.0"
   }
 }

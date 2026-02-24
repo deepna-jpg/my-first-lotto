@@ -43,3 +43,12 @@
 2. Create `wrangler.toml` with `compatibility_date` and `pages_build_output_dir`.
 3. Install `wrangler` as a dev dependency.
 4. Run `npm run deploy` to publish to Cloudflare Pages.
+
+## **6. Current Change Plan (Local .env Support)**
+
+**Overview:** Enable local development to read `OPENAI_API_KEY` from a `.env` file when using a local dev server.
+
+**Plan Steps:**
+1. Add a lightweight local dev server that serves static files and proxies `/api/openai`.
+2. Load `.env` via `dotenv` so local requests use `OPENAI_API_KEY`.
+3. Add a `dev` script and dependency updates.
