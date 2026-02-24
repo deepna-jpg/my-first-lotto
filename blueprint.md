@@ -33,3 +33,13 @@
     *   Add an event listener to the "Simulate Rain" button to test the functionality.
 5.  **Design `style.css`:** Apply a clean, modern design to the UI for a good user experience.
 6.  **Update `blueprint.md`:** Keep this document updated as development progresses.
+
+## **5. Current Change Plan (Cloudflare Pages Deployment)**
+
+**Overview:** Add Cloudflare Pages deployment automation via `wrangler`, ensure a build output in `dist`, and configure the project for Pages.
+
+**Plan Steps:**
+1. Add a minimal `package.json` with `build` and `deploy` scripts.
+2. Create `wrangler.toml` with `compatibility_date` and `pages_build_output_dir`.
+3. Install `wrangler` as a dev dependency.
+4. Run `npm run deploy` to publish to Cloudflare Pages.

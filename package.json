@@ -1,0 +1,12 @@
+{
+  "name": "jeju-weather-guard",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p dist && cp -R index.html main.js style.css places.json dist/",
+    "deploy": "npm run build && npx wrangler pages deploy dist --project-name=imaginedigit"
+  },
+  "devDependencies": {
+    "wrangler": "^4.68.0"
+  }
+}

@@ -2,9 +2,8 @@
 
 // Configuration
 const CONFIG = {
-    CLOUDFLARE_API_URL: 'https://weather.your-subdomain.workers.dev', 
-    GEMINI_API_KEY: '', 
-    GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
+    CLOUDFLARE_API_URL: 'https://weather.your-subdomain.workers.dev',
+    OPENAI_API_URL: '/api/openai'
 };
 
 let allPlaces = [];
@@ -84,7 +83,6 @@ async function updateWeather(mockType = null) {
         alertTitle.textContent = `갑자기 ${conditionText}가 오네요!`;
         alertEl.classList.remove('hidden');
         
-        // 브라우저 알림 발송
         showNotification(`[제주 웨더 가드] 날씨 경보`, `현재 제주에 ${conditionText}가 감지되었습니다. 일정을 변경하시겠습니까?`);
         
         hideSelectionUI();
@@ -127,25 +125,29 @@ async function handleCategoryChoice(category) {
 
 async function generateCategoryGuide(condition, category) {
     const messageEl = document.getElementById('plan-b-message');
-    messageEl.textContent = `제미나이가 여행 팁을 준비 중입니다...`;
+    messageEl.textContent = `ChatGPT가 여행 팁을 준비 중입니다...`;
     
     const conditionKr = condition === 'rain' ? '비가 내리는' : '폭염인';
     const prompt = `현재 제주의 날씨는 ${conditionKr} 상태입니다. 사용자가 대안 테마로 '${category}'을(를) 선택했습니다. 이 테마를 즐기기 좋은 이유와 팁을 한국어로 2문장 내외로 알려주세요.`;
 
     try {
-        if (!CONFIG.GEMINI_API_KEY) throw new Error('Key missing');
-        const response = await fetch(`${CONFIG.GEMINI_API_URL}?key=${CONFIG.GEMINI_API_KEY}`, {
+        const response = await fetch(CONFIG.OPENAI_API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                model: "gpt-4o",
+                messages: [{ role: "user", content: prompt }],
+                temperature: 0.7
+            })
         });
         const data = await response.json();
-        const tip = data.candidates[0].content.parts[0].text;
+        const tip = data.choices[0].message.content;
         messageEl.textContent = tip;
-        
-        // 생성된 팁을 알림으로도 발송
-        showNotification("✨ 제미나이의 팁", tip);
+        showNotification("✨ ChatGPT의 팁", tip);
     } catch (error) {
+        console.error(error);
         messageEl.textContent = `${category} 테마는 ${conditionKr} 날씨에 제주를 즐기기 가장 쾌적한 선택이에요!`;
     }
 }
@@ -161,7 +163,7 @@ async function finalizePlanB(chosenSpot) {
     document.getElementById('plan-b-message').textContent = `${chosenSpot.name}으로 일정을 업데이트했습니다!`;
 }
 
-// 트리플 사진 분석 기능
+// 트리플 사진 분석 (OpenAI Vision 사용)
 async function handleTripleUpload(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -173,46 +175,43 @@ async function handleTripleUpload(event) {
     reader.onload = async (e) => {
         const base64Image = e.target.result.split(',')[1];
         
-        const prompt = "This is a screenshot of a travel itinerary from the Triple app. Extract the names of the places (tourist spots, restaurants, etc.). Return only a JSON array of strings containing the place names.";
-
         try {
-            if (!CONFIG.GEMINI_API_KEY) throw new Error('Key missing');
-            
-            const response = await fetch(`${CONFIG.GEMINI_API_URL}?key=${CONFIG.GEMINI_API_KEY}`, {
+            const response = await fetch(CONFIG.OPENAI_API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { text: prompt },
-                            { inline_data: { mime_type: file.type, data: base64Image } }
-                        ]
-                    }]
+                    model: "gpt-4o",
+                    messages: [
+                        {
+                            role: "user",
+                            content: [
+                                { type: "text", text: "이 이미지는 트리플 앱의 일정 화면입니다. 방문하는 장소 이름들만 추출해서 JSON 배열 ['장소1', '장소2'] 형식으로 답해주세요." },
+                                { type: "image_url", image_url: { url: `data:${file.type};base64,${base64Image}` } }
+                            ]
+                        }
+                    ],
+                    temperature: 0.2
                 })
             });
 
             const data = await response.json();
-            const textResponse = data.candidates[0].content.parts[0].text;
+            const textResponse = data.choices[0].message.content;
             const placeNames = JSON.parse(textResponse.match(/\[.*\]/s)[0]);
             
-            // 추출된 장소들로 일정 업데이트
             currentItinerary = placeNames.map((name, index) => {
                 const found = allPlaces.find(p => p.name.includes(name)) || {
-                    id: 100 + index,
-                    name: name,
-                    type: 'outdoor',
-                    region: '제주',
-                    category: '기타'
+                    id: 100 + index, name: name, type: 'outdoor', region: '제주', category: '기타'
                 };
                 return found;
             }).slice(0, 4);
 
             renderItinerary();
-            statusEl.textContent = "✅ 트리플 일정 연동 완료!";
-            showNotification("✅ 연동 성공", "트리플 일정을 성공적으로 불러왔습니다. 날씨 감시를 시작합니다.");
+            statusEl.textContent = "✅ 일정 연동 완료!";
         } catch (error) {
             console.error(error);
-            statusEl.textContent = "❌ 분석 실패 (API 키를 확인하세요)";
+            statusEl.textContent = "❌ 분석 실패";
         }
     };
     reader.readAsDataURL(file);
